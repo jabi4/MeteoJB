@@ -4,6 +4,7 @@ from mqtt.MqttClient import MqttClient
 from screens.ValueTab import ValueTab
 from screens.ConfigTab import ConfigTab
 from datasource.dto.ConfigDto import ConfigDto
+from service.ConfigurationService import ConfigurationService
 
 class MainScreen(ttk.Frame):
 
@@ -12,9 +13,9 @@ class MainScreen(ttk.Frame):
     def __init__(self, mainWindow):
         super().__init__(master=mainWindow)
         self.grid()
-
         self.mqtt = MqttClient(self.SERVER_URL, 1883, "meteoJB/+")
         self.mqtt.start()
+        self.configurationService = ConfigurationService()
         self.cnfg = ConfigDto()
         self.createMainScreen()
 
@@ -37,11 +38,14 @@ class MainScreen(ttk.Frame):
         btnSave = ttk.Button(self, text="Save config", command=self.handleSaveBtn)
         btnSave.grid(row=1, column=0, columnspan=2, padx=5, pady=5, sticky=tk.EW)
 
+    def setupConfig(self):
+        configDto: ConfigDto = self.configurationService.readConfiguration(self.tab1.type)
+
 
     def handleSaveBtn(self):
         configDto = self.tab2.configSelect.getConfiguration()
         configDto.type = self.tab1.typeSelect.choices[self.tab1.typeSelect.radioValue.get()]
-        print(configDto)
+        self.configurationService.insertOrUpdate(configDto)
 
 
 
