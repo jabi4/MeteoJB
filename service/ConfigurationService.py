@@ -23,6 +23,7 @@ class ConfigurationService:
                 lastModified TEXT NOT NULL
             );
         """
+        DBUtils.izvrsiIZapisi(self.connection, query)
 
     def insertOrUpdate(self, configDto: ConfigDto):
         configuration = self._ifConfigExists(configDto.type)
